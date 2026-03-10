@@ -1,0 +1,45 @@
+{% extends "sweblog/base.html" %}
+{% block content %}
+  {% for post in posts %}
+    <article class="media content-section">
+      <div class="media-body">
+        <div class="article-metadata">
+          <span class="mr-2">{{ post.author }}</span>
+          <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+        </div>
+        <h2><a class="article-title" href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h2>
+        <p class="article-content">{{ post.content|truncatewords:35 }}</p>
+        <a class="btn btn-outline-info btn-sm" href="{% url 'post-detail' post.pk %}">Read more</a>
+        {% if user == post.author %}
+          <a class="btn btn-outline-secondary btn-sm" href="{% url 'post-update' post.pk %}">Edit</a>
+          <a class="btn btn-outline-danger btn-sm" href="{% url 'post-delete' post.pk %}">Delete</a>
+        {% endif %}
+      </div>
+    </article>
+  {% empty %}
+    <div class="content-section">
+      <h3>No posts available yet</h3>
+      <p>Create the first one from the <a href="{% url 'post-create' %}">New Post</a> page.</p>
+    </div>
+  {% endfor %}
+
+  {% if is_paginated %}
+    <nav aria-label="Post pagination">
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endblock content %}

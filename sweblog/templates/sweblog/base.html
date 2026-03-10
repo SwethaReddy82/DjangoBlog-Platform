@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'sweblog/main.css' %}">
+    {% if title %}
+        <title>BlogForge - {{ title }}</title>
+    {% else %}
+        <title>BlogForge</title>
+    {% endif %}
+</head>
+<body>
+<header class="site-header">
+  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+    <div class="container">
+      <a class="navbar-brand mr-4" href="{% url 'blog-home' %}">BlogForge</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarToggle">
+        <div class="navbar-nav mr-auto">
+          <a class="nav-item nav-link" href="{% url 'blog-home' %}">Home</a>
+          <a class="nav-item nav-link" href="{% url 'blog-about' %}">About</a>
+          <a class="nav-item nav-link" href="{% url 'post-create' %}">New Post</a>
+        </div>
+        <div class="navbar-nav">
+          {% if user.is_authenticated %}
+            <span class="navbar-text mr-2">Hi, {{ user.username }}</span>
+            <a class="nav-item nav-link" href="{% url 'post-create' %}">Create</a>
+            <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+          {% else %}
+            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+            <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<main role="main" class="container">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mt-2">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  <div class="row">
+    <div class="col-md-8">
+      {% block content %}{% endblock %}
+    </div>
+    <div class="col-md-4">
+      <div class="content-section">
+        <h3>Our Sidebar</h3>
+        <p class="text-muted">Helpful shortcuts and recent activity.</p>
+        <h5>Latest Posts</h5>
+        <ul class="list-group mb-3">
+          {% for latest_post in latest_posts %}
+            <li class="list-group-item list-group-item-light">
+              <a href="{% url 'post-detail' latest_post.pk %}">{{ latest_post.title }}</a><br>
+              <small class="text-muted">by {{ latest_post.author }} on {{ latest_post.date_posted|date:"M d, Y" }}</small>
+            </li>
+          {% empty %}
+            <li class="list-group-item list-group-item-light">No posts yet.</li>
+          {% endfor %}
+        </ul>
+
+        <h5>Announcements</h5>
+        <ul class="list-group mb-3">
+          {% for announcement in announcements %}
+            <li class="list-group-item list-group-item-light">{{ announcement }}</li>
+          {% endfor %}
+        </ul>
+
+        <h5>Quick Links</h5>
+        <ul class="list-group">
+          {% for link in quick_links %}
+            <li class="list-group-item list-group-item-light"><a href="{% url link.url_name %}">{{ link.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
